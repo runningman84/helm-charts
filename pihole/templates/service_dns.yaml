@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pihole.dnservice.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "pihole.name" . }}
+    helm.sh/chart: {{ include "pihole.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.dns.type }}
+  ports:
+    - port: {{ .Values.service.dns.port }}
+      targetPort: 53
+      protocol: UDP
+      name: {{ .Values.service.dns.name }}
+  selector:
+    app.kubernetes.io/name: {{ include "pihole.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

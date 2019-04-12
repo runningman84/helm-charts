@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mosquitto.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "mosquitto.name" . }}
+    helm.sh/chart: {{ include "mosquitto.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: mqtt
+      protocol: TCP
+      name: mqtt
+  selector:
+    app.kubernetes.io/name: {{ include "mosquitto.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
