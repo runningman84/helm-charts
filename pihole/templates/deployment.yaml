@@ -55,7 +55,7 @@ spec:
             - name: ServerIP
               value: 0.0.0.0
             - name: DNS1
-              value: 127.0.0.1#54              
+              value: 127.0.0.1#5054              
             - name: DNS2
               value: "no"
             - name: WEBPASSWORD
@@ -70,7 +70,7 @@ spec:
           imagePullPolicy: {{ .Values.cloudflared.image.pullPolicy }}
           ports:
             - name: dns
-              containerPort: 54
+              containerPort: 5054
               protocol: UDP
           # livenessProbe:
           #   httpGet:
@@ -80,7 +80,7 @@ spec:
             exec:
               command:
               - nslookup
-              - -po=54
+              - -po=5054
               - cloudflare.com.
               - 127.0.0.1
             initialDelaySeconds: 5
