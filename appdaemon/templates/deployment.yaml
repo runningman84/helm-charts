@@ -1,0 +1,101 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "appdaemon.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "appdaemon.name" . }}
+    helm.sh/chart: {{ include "appdaemon.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "appdaemon.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "appdaemon.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      volumes:
+      - name: config
+        emptyDir: {}
+      - name: git-secret
+        secret:
+          #defaultMode: 288
+          secretName: appdaemon-git-creds # your-ssh-key
+      initContainers:
+        - name: git-sync-init
+          image: "{{ .Values.gitsync.image.repository }}:{{ .Values.gitsync.image.tag }}"
+          imagePullPolicy: {{ .Values.gitsync.image.pullPolicy }}
+          volumeMounts:
+          - name: config
+            mountPath: /config
+          - name: git-secret
+            mountPath: /etc/git-secret
+          env:
+          - name: GIT_SYNC_REPO
+            value: "{{ .Values.gitsync.repo }}"
+          - name: GIT_SYNC_BRANCH
+            value: "{{ .Values.gitsync.branch }}"
+          - name: GIT_SYNC_ROOT
+            value: /config
+          - name: GIT_SYNC_DEST
+            value: "appdaemon-config.git"
+          - name: GIT_SYNC_PERMISSIONS
+            value: "0777"
+          - name: GIT_SYNC_SSH
+            value: "true"
+          - name: GIT_SYNC_ONE_TIME
+            value: "true"
+          securityContext:
+            runAsUser: {{ .Values.gitsync.runAsUser }}
+      containers:
+        - name: git-sync
+          image: "{{ .Values.gitsync.image.repository }}:{{ .Values.gitsync.image.tag }}"
+          imagePullPolicy: {{ .Values.gitsync.image.pullPolicy }}
+          volumeMounts:
+          - name: config
+            mountPath: /config
+          - name: git-secret
+            mountPath: /etc/git-secret
+          env:
+          - name: GIT_SYNC_REPO
+            value: "{{ .Values.gitsync.repo }}"
+          - name: GIT_SYNC_BRANCH
+            value: "{{ .Values.gitsync.branch }}"
+          - name: GIT_SYNC_ROOT
+            value: /config
+          - name: GIT_SYNC_DEST
+            value: "appdaemon-config.git"
+          - name: GIT_SYNC_PERMISSIONS
+            value: "0777"
+          - name: GIT_SYNC_SSH
+            value: "true"
+          securityContext:
+            runAsUser: {{ .Values.gitsync.runAsUser }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.appdaemon.image.repository }}:{{ .Values.appdaemon.image.tag }}"
+          imagePullPolicy: {{ .Values.appdaemon.image.pullPolicy }}
+          volumeMounts:
+          - name: config
+            mountPath: /config
+          command: [ "appdaemon", "-c", "/config/appdaemon-config.git" ]
+          securityContext:
+            runAsUser: {{ .Values.appdaemon.runAsUser }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
