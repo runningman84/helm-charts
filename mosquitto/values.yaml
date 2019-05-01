@@ -12,6 +12,12 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+exporter:
+  image:
+    repository: sapcc/mosquitto-exporter
+    tag: 0.5.0
+    pullPolicy: IfNotPresent
+
 service:
   type: LoadBalancer
   port: 1883

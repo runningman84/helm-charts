@@ -72,10 +72,6 @@ spec:
             - name: dns
               containerPort: 5054
               protocol: UDP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
           readinessProbe:
             exec:
               command:
@@ -85,11 +81,20 @@ spec:
               - 127.0.0.1
             initialDelaySeconds: 5
             periodSeconds: 10
-          # env:
-          #   - name: DNS1
-          #     value: dns.google.com
-          #   - name: DNS2
-          #     value: dns.quad9.net
+        - name: {{ .Chart.Name }}-exporter
+          image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
+          imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
+          volumeMounts:
+          - mountPath: /etc/pihole
+            name: config
+          ports:
+            - name: exporter
+              containerPort: 9311
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: exporter
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

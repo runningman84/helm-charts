@@ -37,6 +37,17 @@ spec:
               port: mqtt
             initialDelaySeconds: 5
             periodSeconds: 60
+        - name: {{ .Chart.Name }}-exporter
+          image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
+          imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
+          ports:
+            - name: exporter
+              containerPort: 9234
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: exporter
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
