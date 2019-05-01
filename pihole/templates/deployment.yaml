@@ -89,7 +89,9 @@ spec:
           volumeMounts:
           - mountPath: /etc/pihole
             name: config
+          command: python3
           args:
+          - pihole_exporter.py
           - -o 127.0.0.1
           - -p 9311
           - -e
