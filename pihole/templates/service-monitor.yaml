@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "pihole.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "pihole.name" . }}
+    helm.sh/chart: {{ include "pihole.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- if .Values.pihole.metrics.serviceMonitor.additionalLabels }}
+{{ toYaml .Values.pihole.metrics.serviceMonitor.additionalLabels | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      svcmon: {{ .Release.Name }}-{{ template "pihole.name" . }}
+  namespaceSelector:
+    matchNames:
+    - "{{ $.Release.Namespace }}"
+  endpoints:
+  - port: exporter
+    path: '/metrics'

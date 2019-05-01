@@ -18,6 +18,12 @@ cloudflared:
     tag: amd64
     pullPolicy: IfNotPresent
 
+exporter:
+  image:
+    repository: dr1s/pihole_exporter
+    tag: 0.4
+    pullPolicy: IfNotPresent
+
 nameOverride: ""
 fullnameOverride: ""
 
