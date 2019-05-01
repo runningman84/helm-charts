@@ -7,9 +7,6 @@ metadata:
     helm.sh/chart: {{ include "mosquitto.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-    {{- if .Values.mosquitto.metrics.serviceMonitor.additionalLabels }}
-{{ toYaml .Values.mosquitto.metrics.serviceMonitor.additionalLabels | indent 4 }}
-{{- end }}
 spec:
   selector:
     matchLabels:

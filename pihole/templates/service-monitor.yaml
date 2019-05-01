@@ -7,9 +7,6 @@ metadata:
     helm.sh/chart: {{ include "pihole.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-    {{- if .Values.pihole.metrics.serviceMonitor.additionalLabels }}
-{{ toYaml .Values.pihole.metrics.serviceMonitor.additionalLabels | indent 4 }}
-{{- end }}
 spec:
   selector:
     matchLabels:
