@@ -81,12 +81,18 @@ spec:
               - 127.0.0.1
             initialDelaySeconds: 5
             periodSeconds: 10
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
         - name: {{ .Chart.Name }}-exporter
           image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
           imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
           volumeMounts:
           - mountPath: /etc/pihole
             name: config
+          args:
+          - -o 127.0.0.1
+          - -p 9311
+          - -e
           ports:
             - name: exporter
               containerPort: 9311
