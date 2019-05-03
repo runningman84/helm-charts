@@ -94,9 +94,9 @@ spec:
           args:
           - pihole_exporter.py
           - -o
-          - 127.0.0.1
+          - "127.0.0.1"
           - -p
-          - 9311
+          - "9311"
           - -e
           ports:
             - name: exporter
