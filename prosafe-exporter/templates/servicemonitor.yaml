@@ -13,7 +13,7 @@ metadata:
 spec:
   endpoints:
   - targetPort: http
-    path: /probe?target={{ .Values.target.host }}%3A{{ .Values.target.interface }}
+    path: /probe?target={{ .Values.target.host }}:{{ .Values.target.interface }}
 {{- if .Values.monitoring.serviceMonitor.interval }}
     interval: {{ .Values.monitoring.serviceMonitor.interval }}
 {{- end }}
