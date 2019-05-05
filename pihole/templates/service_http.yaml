@@ -7,6 +7,7 @@ metadata:
     helm.sh/chart: {{ include "pihole.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: http
 spec:
   type: {{ .Values.service.http.type }}
   ports:
@@ -14,6 +15,10 @@ spec:
       targetPort: 80
       protocol: TCP
       name: {{ .Values.service.http.name }}
+    - port: {{ .Values.monitoring.exporterPort }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     app.kubernetes.io/name: {{ include "pihole.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

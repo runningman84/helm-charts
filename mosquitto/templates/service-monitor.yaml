@@ -1,19 +1,31 @@
+{{- if and ( .Values.monitoring.serviceMonitor.enabled ) ( .Values.monitoring.enabled ) }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "mosquitto.fullname" . }}
+{{- if .Values.monitoring.serviceMonitor.labels }}
   labels:
-    app.kubernetes.io/name: {{ include "mosquitto.name" . }}
-    helm.sh/chart: {{ include "mosquitto.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ toYaml .Values.monitoring.serviceMonitor.labels | indent 4}}
+{{- end }}
+  name: {{ template "mosquitto.fullname" . }}-prometheus-exporter
+{{- if .Values.monitoring.serviceMonitor.namespace }}
+  namespace: {{ .Values.monitoring.serviceMonitor.namespace }}
+{{- end }}
 spec:
-  selector:
-    matchLabels:
-      svcmon: {{ .Release.Name }}-{{ template "mosquitto.name" . }}
+  endpoints:
+  - targetPort: metrics
+    path: /metrics
+{{- if .Values.monitoring.serviceMonitor.interval }}
+    interval: {{ .Values.monitoring.serviceMonitor.interval }}
+{{- end }}
+{{- if .Values.monitoring.serviceMonitor.telemetryPath }}
+    path: {{ .Values.monitoring.serviceMonitor.telemetryPath }}
+{{- end }}
+  jobLabel: {{ template "mosquitto.fullname" . }}-prometheus-exporter
   namespaceSelector:
     matchNames:
-    - "{{ $.Release.Namespace }}"
-  endpoints:
-  - port: exporter
-    path: '/metrics'
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "mosquitto.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

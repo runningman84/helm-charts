@@ -83,9 +83,9 @@ spec:
             periodSeconds: 10
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-        - name: {{ .Chart.Name }}-exporter
-          image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
-          imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
+        - name: {{ .Chart.Name }}-prometheus-exporter
+          image: "{{ .Values.monitoring.image.repository }}:{{ .Values.monitoring.image.tag }}"
+          imagePullPolicy: {{ .Values.monitoring.image.pullPolicy }}
           volumeMounts:
           - mountPath: /etc/pihole
             name: config
@@ -99,13 +99,13 @@ spec:
           - "9311"
           - -e
           ports:
-            - name: exporter
-              containerPort: 9311
+            - name: metrics
+              containerPort: {{ .Values.monitoring.exporterPort}}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: exporter
+              port: metrics
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

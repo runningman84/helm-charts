@@ -37,19 +37,29 @@ spec:
               port: mqtt
             initialDelaySeconds: 5
             periodSeconds: 60
-        - name: {{ .Chart.Name }}-exporter
-          image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
-          imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+  {{- if .Values.monitoring.enabled }}
+        - name: {{ .Chart.Name }}-prometheus-exporter
+          image: "{{ .Values.monitoring.image.repository }}:{{ .Values.monitoring.image.tag }}"
+          imagePullPolicy: {{ .Values.monitoring.image.pullPolicy }}
+          args:
+  {{- if .Values.monitoring.args }}
+  {{ toYaml .Values.monitoring.args | indent 8 }}
+  {{- end }}
+  {{- if .Values.monitoring.resources }}
+          resources:
+  {{ toYaml .Values.monitoring.resources | indent 10 }}
+  {{- end }}
           ports:
-            - name: exporter
-              containerPort: 9234
+            - name: metrics
+              containerPort: {{ .Values.monitoring.exporterPort}}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: exporter
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
+              port: metrics
+  {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

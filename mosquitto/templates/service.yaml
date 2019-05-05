@@ -1,6 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
+{{- if not .Values.monitoring.serviceMonitor.enabled }}
+  annotations:
+{{- if .Values.monitoring.telemetryPath }}
+    prometheus.io/path: {{ .Values.monitoring.telemetryPath }}
+{{- else }}
+    prometheus.io/path: /metrics
+{{- end }}
+    prometheus.io/port: "{{ .Values.monitoring.exporterPort }}"
+    prometheus.io/scrape: "true"
+{{- end }}
   name: {{ include "mosquitto.fullname" . }}
   labels:
     app.kubernetes.io/name: {{ include "mosquitto.name" . }}
@@ -14,6 +24,10 @@ spec:
       targetPort: mqtt
       protocol: TCP
       name: mqtt
+    - port: {{ .Values.monitoring.exporterPort }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics      
   selector:
     app.kubernetes.io/name: {{ include "mosquitto.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
