@@ -1,0 +1,29 @@
+{{- if and ( .Values.monitoring.serviceMonitor.enabled ) ( .Values.monitoring.enabled ) }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+{{- if .Values.monitoring.serviceMonitor.labels }}
+  labels:
+{{ toYaml .Values.monitoring.serviceMonitor.labels | indent 4}}
+{{- end }}
+  name: {{ template "prosafe-exporter.fullname" . }}
+{{- if .Values.monitoring.serviceMonitor.namespace }}
+  namespace: {{ .Values.monitoring.serviceMonitor.namespace }}
+{{- end }}
+spec:
+  endpoints:
+  - targetPort: http
+    # FIXME dynamic targets
+    path: "probe?target=192.168.178.4%3Aeth0"
+{{- if .Values.monitoring.serviceMonitor.interval }}
+    interval: {{ .Values.monitoring.serviceMonitor.interval }}
+{{- end }}
+  jobLabel: {{ template "prosafe-exporter.fullname" . }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "prosafe-exporter.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
