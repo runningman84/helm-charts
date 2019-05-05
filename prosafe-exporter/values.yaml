@@ -16,6 +16,12 @@ service:
   type: ClusterIP
   port: 9493
 
+
+target:
+  # Enter host ip or name here
+  host: 1.2.3.4
+  interface: eth0
+
 ingress:
   enabled: false
   annotations: {}
@@ -28,6 +34,21 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+## Add support for Prometheus 
+monitoring:
+  enabled: true
+  serviceMonitor:
+    # When set true and if Prometheus Operator is installed then use a ServiceMonitor to configure scraping
+    enabled: true
+    # Set the namespace the ServiceMonitor should be deployed
+    # namespace: monitoring
+    # Set how frequently Prometheus should scrape
+    # interval: 30s
+    # Set path to beats-exporter telemtery-path
+    # telemetryPath: /metrics
+    # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
+    # labels:
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
