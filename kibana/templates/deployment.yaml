@@ -24,10 +24,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: ES_JAVA_OPTS
-              value: "Xms1024m -Xmx1024m"
             - name: ELASTICSEARCH_URL
-              value: "Xms1024m -Xmx1024m"
+              value: "http://elasticsearch:9200"
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch:9200"
           ports:
             - name: http
               containerPort: 5601
