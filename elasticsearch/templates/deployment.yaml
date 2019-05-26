@@ -29,19 +29,24 @@ spec:
             - name: bootstrap.memory_lock
               value: "true"
             - name: ES_JAVA_OPTS
-              value: "Xms1024m -Xmx1024m"
+              value: "-Xms1024m -Xmx1024m"
           ports:
             - name: http
               containerPort: 9200
               protocol: TCP
+            - name: transport
+              containerPort: 9300
+              protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /_cluster/health
               port: http
+            initialDelaySeconds: 5
           readinessProbe:
             httpGet:
-              path: /
+              path: /_cluster/health?local=true
               port: http
+            initialDelaySeconds: 60
           volumeMounts:
           - mountPath: /usr/share/elasticsearch/data
             name: datastore              
