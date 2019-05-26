@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: amazon/opendistro-for-elasticsearch-kibana
-  tag: 0.9.0
+  repository: docker.elastic.co/kibana/kibana-oss
+  tag: 7.1.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""

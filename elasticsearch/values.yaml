@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: amazon/opendistro-for-elasticsearch
-  tag: 0.9.0
+  repository: docker.elastic.co/elasticsearch/elasticsearch-oss
+  tag: 7.1.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""

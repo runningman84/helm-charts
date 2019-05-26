@@ -37,6 +37,9 @@ spec:
             - name: transport
               containerPort: 9300
               protocol: TCP
+            - name: perftop
+              containerPort: 9600
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /_cluster/health
