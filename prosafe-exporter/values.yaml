@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: tgbyte/prosafe_exporter
+  repository: runningman84/prosafe_exporter
   tag: latest
   pullPolicy: IfNotPresent
 
