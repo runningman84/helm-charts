@@ -1,4 +1,4 @@
-# Default values for prometheus_bot.
+# Default values for prometheus-telegram-bot.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -22,6 +22,7 @@ settings:
   #template_path: "template.tmpl" 
   time_zone: "Europe/Berlin"
   split_token: "|"
+
 
 ingress:
   enabled: false

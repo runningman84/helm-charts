@@ -1,13 +1,13 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "prometheus_bot.fullname" . -}}
+{{- $fullName := include "prometheus-telegram-bot.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app.kubernetes.io/name: {{ include "prometheus_bot.name" . }}
-    helm.sh/chart: {{ include "prometheus_bot.chart" . }}
+    app.kubernetes.io/name: {{ include "prometheus-telegram-bot.name" . }}
+    helm.sh/chart: {{ include "prometheus-telegram-bot.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
