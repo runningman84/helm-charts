@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "prometheus_bot.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "prometheus_bot.name" . }}
+    helm.sh/chart: {{ include "prometheus_bot.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  config.yaml: |
+{{- if .Values.settings }}
+{{ toYaml .Values.settings | indent 4 }}
+{{- end }}
