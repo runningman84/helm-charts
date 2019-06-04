@@ -39,7 +39,11 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "alertmanager-bot.fullname" . }}
-                  key: telegram-token            
+                  key: telegram-token
+            - name: TEMPLATE_PATHS
+              value: "{{ .Values.templatePath }}"
+            - name: LISTEN_ADDR
+              value: "{{ .Values.listenAddr }}"
           ports:
             - name: http
               containerPort: 8080

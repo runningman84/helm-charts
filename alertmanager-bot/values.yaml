@@ -33,7 +33,10 @@ telegramAdmin: ""
 telegramToken: ""
 storeEngine: "bolt"
 boltPath: "/tmp/bot.db"
+templatePath: "/templates/default.tmpl"
 alertmanagerUrl: "http://alertmanager:9093"
+listenAddr: "0.0.0.0:8080"
+
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
