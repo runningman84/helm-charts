@@ -52,6 +52,8 @@ spec:
             value: "true"
           securityContext:
             runAsUser: {{ .Values.gitsync.runAsUser }}
+          resources:
+{{ toYaml .Values.gitsync.resources | indent 12 }}
       containers:
         - name: git-sync
           image: "{{ .Values.gitsync.image.repository }}:{{ .Values.gitsync.image.tag }}"
@@ -76,6 +78,8 @@ spec:
             value: "true"
           securityContext:
             runAsUser: {{ .Values.gitsync.runAsUser }}
+          resources:
+{{ toYaml .Values.gitsync.resources | indent 12 }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.appdaemon.image.repository }}:{{ .Values.appdaemon.image.tag }}"
           imagePullPolicy: {{ .Values.appdaemon.image.pullPolicy }}
@@ -86,7 +90,7 @@ spec:
           securityContext:
             runAsUser: {{ .Values.appdaemon.runAsUser }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.appdaemon.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
