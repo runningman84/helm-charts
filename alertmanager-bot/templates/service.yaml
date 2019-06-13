@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "prometheus-telegram-bot.fullname" . }}
+  name: {{ include "alertmanager-bot.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "prometheus-telegram-bot.name" . }}
-    helm.sh/chart: {{ include "prometheus-telegram-bot.chart" . }}
+    app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
+    helm.sh/chart: {{ include "alertmanager-bot.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
@@ -15,5 +15,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "prometheus-telegram-bot.name" . }}
+    app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

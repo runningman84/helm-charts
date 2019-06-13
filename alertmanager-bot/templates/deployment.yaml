@@ -1,0 +1,72 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "alertmanager-bot.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
+    helm.sh/chart: {{ include "alertmanager-bot.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ALERTMANAGER_URL
+              value: "{{ .Values.alertmanagerUrl }}"
+            - name: BOLT_PATH
+              value: "{{ .Values.boltPath }}"
+            - name: STORE
+              value: "{{ .Values.storeEngine }}"
+            - name: TELEGRAM_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "alertmanager-bot.fullname" . }}
+                  key: telegram-admin
+            - name: TELEGRAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "alertmanager-bot.fullname" . }}
+                  key: telegram-token
+            - name: TEMPLATE_PATHS
+              value: "{{ .Values.templatePath }}"
+            - name: LISTEN_ADDR
+              value: "{{ .Values.listenAddr }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
