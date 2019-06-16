@@ -47,10 +47,8 @@ spec:
   {{- if .Values.monitoring.args }}
   {{ toYaml .Values.monitoring.args | indent 8 }}
   {{- end }}
-  {{- if .Values.monitoring.resources }}
           resources:
   {{ toYaml .Values.monitoring.resources | indent 10 }}
-  {{- end }}
           ports:
             - name: metrics
               containerPort: {{ .Values.monitoring.exporterPort}}
