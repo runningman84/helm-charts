@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "doods.fullname" . }}:{{ .Values.service.port }}']
+      args:  ['{{ include "doods.fullname" . }}:{{ .Values.service.port }}/detectors']
   restartPolicy: Never
