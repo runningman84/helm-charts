@@ -7,7 +7,7 @@ replicaCount: 1
 pihole:
   image:
     repository: pihole/pihole
-    tag: 4.2.2
+    tag: 4.3.1-2
     pullPolicy: IfNotPresent
   ## Optionally specify an web password
   #webPassword: random
