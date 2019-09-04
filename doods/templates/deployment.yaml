@@ -20,6 +20,19 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      initContainers:
+        - name: models-download-1
+          image: busybox
+          command: [ "wget", "-O", "/tmp/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite", "https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite"]
+          volumeMounts:
+          - name: models-volume
+            mountPath: /tmp
+        - name: models-download-2
+          image: busybox
+          command: [ "wget", "-O", "/tmp/coco_labels.txt", "https://dl.google.com/coral/canned_models/coco_labels.txt"]
+          volumeMounts:
+          - name: models-volume
+            mountPath: /tmp            
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -41,12 +54,24 @@ spec:
           volumeMounts:
           - mountPath: /dev/bus/usb
             name: usb
+          - mountPath: /opt/doods/config.yaml
+            name: config-volume
+            subPath: config.yaml
+          - mountPath: /opt/doods/models
+            name: models-volume
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: usb
           hostPath:
             path: /dev/bus/usb
+        - name: config-volume
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ include "doods.fullname" . }}
+        - name: models-volume
+          emptyDir: {}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
