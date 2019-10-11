@@ -18,6 +18,7 @@ spec:
   loadBalancerSourceRanges:
 {{ toYaml .Values.service.dns.loadBalancerSourceRanges | indent 4 }}
   {{- end }}
+  {{- end }}
   ports:
     - port: {{ .Values.service.dns.port }}
       targetPort: 53
