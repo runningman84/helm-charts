@@ -10,6 +10,14 @@ metadata:
     app.kubernetes.io/component: dns
 spec:
   type: {{ .Values.service.dns.type }}
+  {{- if eq .Values.service.dns.type "LoadBalancer" }}
+  {{- if .Values.service.dns.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.dns.loadBalancerIP }}
+  {{- end }}
+  {{- if .Values.service.dns.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .Values.service.dns.loadBalancerSourceRanges | indent 4 }}
+  {{- end }}
   ports:
     - port: {{ .Values.service.dns.port }}
       targetPort: 53
