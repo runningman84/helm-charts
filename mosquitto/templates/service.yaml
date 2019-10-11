@@ -27,6 +27,7 @@ spec:
   loadBalancerSourceRanges:
 {{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
   {{- end }}
+  {{- end }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: mqtt
