@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "pihole.fullname" . }}
@@ -21,7 +21,7 @@ spec:
     spec:
       volumes:
          - name: config
-           emptyDir: {}      
+           emptyDir: {}
       containers:
         - name: {{ .Chart.Name }}-core
           image: "{{ .Values.pihole.image.repository }}:{{ .Values.pihole.image.tag }}"
@@ -43,19 +43,19 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 60
           readinessProbe:
-            exec:              
+            exec:
               command:
               - nslookup
               - -po=53
               - www.google.com.
-              - 127.0.0.1            
+              - 127.0.0.1
             initialDelaySeconds: 10
             periodSeconds: 60
-          env:            
+          env:
             - name: ServerIP
               value: 0.0.0.0
             - name: DNS1
-              value: 127.0.0.1#5054              
+              value: 127.0.0.1#5054
             - name: DNS2
               value: "no"
             - name: WEBPASSWORD
@@ -89,7 +89,7 @@ spec:
           volumeMounts:
           - mountPath: /etc/pihole
             name: config
-          command: 
+          command:
           - python3
           args:
           - pihole_exporter.py
