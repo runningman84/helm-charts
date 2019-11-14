@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: snowzach/doods
-  tag: latest
+  tag: noavx
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
