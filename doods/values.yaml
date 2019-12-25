@@ -7,7 +7,8 @@ replicaCount: 1
 image:
   repository: snowzach/doods
   tag: noavx
-  pullPolicy: IfNotPresent
+  #pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
