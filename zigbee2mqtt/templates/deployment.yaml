@@ -33,13 +33,13 @@ spec:
             value: "Europe/Berlin"
           volumeMounts:
           - mountPath: /dev/ttyACM0
-            name: ttyACM0
+            name: tty
           - mountPath: /app/data
             name: datastore
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: ttyACM0
+        - name: tty
           hostPath:
             path: /dev/ttyACM0
         - name: datastore
