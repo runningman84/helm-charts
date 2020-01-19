@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: koenkk/zigbee2mqtt
-  tag: latest
+  tag: 1.9.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
