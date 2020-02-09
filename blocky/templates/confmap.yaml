@@ -88,3 +88,4 @@ data:
     port: 8053
     # Log level (one from debug, info, warn, error)
     logLevel: info
+  whitelist.txt: |-

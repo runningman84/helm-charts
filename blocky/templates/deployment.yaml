@@ -38,6 +38,9 @@ spec:
           - mountPath: /app/config.yml
             name: config-volume
             subPath: config.yml
+          - mountPath: /app/whitelist.txt
+            name: config-volume
+            subPath: whitelist.txt
           - mountPath: logs
             name: logs-volume
           resources:
