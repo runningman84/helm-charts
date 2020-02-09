@@ -63,7 +63,7 @@ data:
         # optional: automaticaly list refresh period in minutes. Default: 4h.
         # Negative value -> deactivate automaticaly refresh.
         # 0 value -> use default
-        refreshPeriod: 1
+        refreshPeriod: 0
 
     #optional: configuration of client name resolution
     clientLookup:
