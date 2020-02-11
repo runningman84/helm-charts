@@ -36,6 +36,17 @@ spec:
             - name: dns-udp
               containerPort: 8053
               protocol: UDP
+          readinessProbe:
+            exec:
+              command:
+              - /usr/bin/dig
+              - "@127.0.0.1"
+              - -p
+              - "8053"
+              - healthcheck.blocky
+              - +tcp
+            initialDelaySeconds: 5
+            periodSeconds: 60
           volumeMounts:
           - mountPath: /app/config.yml
             name: config-volume
