@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: docker.elastic.co/elasticsearch/elasticsearch-oss
-  tag: 7.1.0
+  repository: elasticsearch
+  tag: 7.6.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -26,6 +26,7 @@ persistence:
   ##   GKE, AWS & OpenStack)
   ##
   # storageClass: "-"
+  # storageClass: longhorn
   ##
   ## If you want to reuse an existing claim, you can pass the name of the PVC using
   ## the existingClaim variable

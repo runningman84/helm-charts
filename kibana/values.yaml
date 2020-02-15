@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: docker.elastic.co/kibana/kibana-oss
-  tag: 7.1.0
+  repository: kibana
+  tag: 7.6.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
