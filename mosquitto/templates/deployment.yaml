@@ -3,29 +3,29 @@ kind: Deployment
 metadata:
   name: {{ include "mosquitto.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "mosquitto.name" . }}
-    helm.sh/chart: {{ include "mosquitto.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "mosquitto.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "mosquitto.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "mosquitto.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "mosquitto.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "mosquitto.selectorLabels" . | nindent 8 }}
     spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "mosquitto.serviceAccountName" . }}
       securityContext:
-        runAsUser: 1883
-        runAsGroup: 1883
-        fsGroup: 1883
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: mqtt
@@ -42,9 +42,11 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 60
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
   {{- if .Values.monitoring.enabled }}
-        - name: {{ .Chart.Name }}-prometheus-exporter
+        - name: {{ .Chart.Name }}-exporter
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.monitoring.image.repository }}:{{ .Values.monitoring.image.tag }}"
           imagePullPolicy: {{ .Values.monitoring.image.pullPolicy }}
           args:
@@ -62,15 +64,15 @@ spec:
               path: /
               port: metrics
   {{- end }}
-    {{- with .Values.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
     {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}

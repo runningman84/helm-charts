@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ include "elasticsearch.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
-    helm.sh/chart: {{ include "elasticsearch.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "elasticsearch.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -19,5 +16,4 @@ spec:
       protocol: TCP
       name: metrics
   selector:
-    app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "elasticsearch.selectorLabels" . | nindent 4 }}

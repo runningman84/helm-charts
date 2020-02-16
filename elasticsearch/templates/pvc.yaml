@@ -5,10 +5,7 @@ apiVersion: v1
 metadata:
   name: {{ template "elasticsearch.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
-    helm.sh/chart: {{ include "elasticsearch.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "elasticsearch.labels" . | nindent 4 }}
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode | quote }}

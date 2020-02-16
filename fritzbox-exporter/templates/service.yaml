@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ include "fritzbox-exporter.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "fritzbox-exporter.name" . }}
-    helm.sh/chart: {{ include "fritzbox-exporter.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "fritzbox-exporter.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,5 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "fritzbox-exporter.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "fritzbox-exporter.selectorLabels" . | nindent 4 }}

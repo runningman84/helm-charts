@@ -26,6 +26,5 @@ spec:
     - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "elasticsearch.selectorLabels" . | nindent 6 }}
 {{- end }}

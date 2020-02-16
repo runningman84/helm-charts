@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ include "kibana.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "kibana.name" . }}
-    helm.sh/chart: {{ include "kibana.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "kibana.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,5 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "kibana.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "kibana.selectorLabels" . | nindent 4 }}

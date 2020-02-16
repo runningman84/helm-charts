@@ -1,22 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-{{- if not .Values.monitoring.serviceMonitor.enabled }}
-  annotations:
-{{- if .Values.monitoring.telemetryPath }}
-    prometheus.io/path: {{ .Values.monitoring.telemetryPath }}
-{{- else }}
-    prometheus.io/path: /metrics
-{{- end }}
-    prometheus.io/port: "{{ .Values.monitoring.exporterPort }}"
-    prometheus.io/scrape: "true"
-{{- end }}
   name: {{ include "mosquitto.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "mosquitto.name" . }}
-    helm.sh/chart: {{ include "mosquitto.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "mosquitto.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   {{- if eq .Values.service.type "LoadBalancer" }}
@@ -30,13 +17,12 @@ spec:
   {{- end }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: mqtt
+      targetPort: http
       protocol: TCP
-      name: mqtt
+      name: http
     - port: {{ .Values.monitoring.exporterPort }}
       targetPort: metrics
       protocol: TCP
-      name: metrics      
+      name: metrics
   selector:
-    app.kubernetes.io/name: {{ include "mosquitto.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "mosquitto.selectorLabels" . | nindent 4 }}
