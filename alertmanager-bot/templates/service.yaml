@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ include "alertmanager-bot.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
-    helm.sh/chart: {{ include "alertmanager-bot.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "alertmanager-bot.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,5 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "alertmanager-bot.selectorLabels" . | nindent 4 }}

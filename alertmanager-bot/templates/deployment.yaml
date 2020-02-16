@@ -3,33 +3,37 @@ kind: Deployment
 metadata:
   name: {{ include "alertmanager-bot.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
-    helm.sh/chart: {{ include "alertmanager-bot.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "alertmanager-bot.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "alertmanager-bot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "alertmanager-bot.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "alertmanager-bot.selectorLabels" . | nindent 8 }}
     spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "alertmanager-bot.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: ALERTMANAGER_URL
-              value: "{{ .Values.alertmanagerUrl }}"
+              value: "{{ .Values.config.alertmanagerUrl }}"
             - name: BOLT_PATH
-              value: "{{ .Values.boltPath }}"
+              value: "{{ .Values.config.boltPath }}"
             - name: STORE
-              value: "{{ .Values.storeEngine }}"
+              value: "{{ .Values.config.storeEngine }}"
             - name: TELEGRAM_ADMIN
               valueFrom:
                 secretKeyRef:
@@ -41,9 +45,9 @@ spec:
                   name: {{ template "alertmanager-bot.fullname" . }}
                   key: telegram-token
             - name: TEMPLATE_PATHS
-              value: "{{ .Values.templatePath }}"
+              value: "{{ .Values.config.templatePath }}"
             - name: LISTEN_ADDR
-              value: "{{ .Values.listenAddr }}"
+              value: "0.0.0.0:8080"
           ports:
             - name: http
               containerPort: 8080
@@ -56,17 +60,28 @@ spec:
             httpGet:
               path: /health
               port: http
+          volumeMounts:
+          - mountPath: /data
+            name: datastore
           resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: datastore
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{- else }}{{ template "alertmanager-bot.fullname" . }}{{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
     {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
