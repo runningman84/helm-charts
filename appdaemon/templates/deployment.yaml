@@ -3,29 +3,24 @@ kind: Deployment
 metadata:
   name: {{ include "appdaemon.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "appdaemon.name" . }}
-    helm.sh/chart: {{ include "appdaemon.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "appdaemon.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "appdaemon.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "appdaemon.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "appdaemon.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "appdaemon.selectorLabels" . | nindent 8 }}
     spec:
-      volumes:
-      - name: config
-        emptyDir: {}
-      - name: git-secret
-        secret:
-          #defaultMode: 288
-          secretName: appdaemon-git-creds # your-ssh-key
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "appdaemon.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: git-sync-init
           image: "{{ .Values.gitsync.image.repository }}:{{ .Values.gitsync.image.tag }}"
@@ -51,7 +46,7 @@ spec:
           - name: GIT_SYNC_ONE_TIME
             value: "true"
           securityContext:
-            runAsUser: {{ .Values.gitsync.runAsUser }}
+            {{- toYaml .Values.gitsync.securityContext | nindent 12 }}
           resources:
 {{ toYaml .Values.gitsync.resources | indent 12 }}
       containers:
@@ -76,30 +71,51 @@ spec:
             value: "0777"
           - name: GIT_SYNC_SSH
             value: "true"
+          - name: GIT_SYNC_WAIT
+            value: "30"
           securityContext:
-            runAsUser: {{ .Values.gitsync.runAsUser }}
+            {{- toYaml .Values.gitsync.securityContext | nindent 12 }}
           resources:
 {{ toYaml .Values.gitsync.resources | indent 12 }}
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.appdaemon.image.repository }}:{{ .Values.appdaemon.image.tag }}"
-          imagePullPolicy: {{ .Values.appdaemon.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "appdaemon", "-c", "/config/appdaemon-config.git" ]
           volumeMounts:
           - name: config
             mountPath: /config
-          command: [ "appdaemon", "-c", "/config/appdaemon-config.git" ]
-          securityContext:
-            runAsUser: {{ .Values.appdaemon.runAsUser }}
+          ports:
+            - name: http
+              containerPort: 5050
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
           resources:
-{{ toYaml .Values.appdaemon.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      - name: config
+        emptyDir: {}
+      - name: git-secret
+        secret:
+          #defaultMode: 288
+          secretName: {{ .Values.gitsync.secretName }} # your-ssh-key
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
     {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{- end }}
