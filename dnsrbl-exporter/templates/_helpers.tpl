@@ -30,3 +30,34 @@ Create chart name and version as used by the chart label.
 {{- define "dnsrbl-exporter.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "dnsrbl-exporter.labels" -}}
+helm.sh/chart: {{ include "dnsrbl-exporter.chart" . }}
+{{ include "dnsrbl-exporter.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "dnsrbl-exporter.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "dnsrbl-exporter.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "dnsrbl-exporter.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "dnsrbl-exporter.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

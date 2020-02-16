@@ -20,6 +20,7 @@ serviceAccount:
   name:
 
 podSecurityContext: {}
+  # fsGroup: 2000
 
 securityContext:
   capabilities:
@@ -29,7 +30,6 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 65534
   runAsGroup: 65534
-  fsGroup: 65534
 
 service:
   type: ClusterIP
