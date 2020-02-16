@@ -6,17 +6,11 @@ replicaCount: 1
 
 image:
   repository: eclipse-mosquitto
-  tag: 1.5.5
+  tag: 1.6.8
   pullPolicy: IfNotPresent
 
 nameOverride: ""
 fullnameOverride: ""
-
-exporter:
-  image:
-    repository: sapcc/mosquitto-exporter
-    tag: 0.5.0
-    pullPolicy: IfNotPresent
 
 service:
   type: LoadBalancer

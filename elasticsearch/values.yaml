@@ -96,5 +96,8 @@ monitoring:
   #  cpu: 100m
   #  memory: 100Mi
 
+  # pass custom args. This is equivalent of Cmd in docker
+  args: []
+
   ## default is "9114".
   exporterPort: 9114

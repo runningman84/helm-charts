@@ -64,6 +64,10 @@ spec:
         - name: {{ .Chart.Name }}-exporter
           image: "{{ .Values.monitoring.image.repository }}:{{ .Values.monitoring.image.tag }}"
           imagePullPolicy: {{ .Values.monitoring.image.pullPolicy }}
+          args:
+  {{- if .Values.monitoring.args }}
+  {{ toYaml .Values.monitoring.args | indent 8 }}
+  {{- end }}
           env:
             - name: ES_URI
               value: "http://127.0.0.1:9200"
