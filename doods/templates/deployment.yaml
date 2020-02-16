@@ -3,51 +3,55 @@ kind: Deployment
 metadata:
   name: {{ include "doods.fullname" . }}
   labels:
-{{ include "doods.labels" . | indent 4 }}
+    {{- include "doods.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "doods.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "doods.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "doods.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "doods.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      serviceAccountName: {{ include "doods.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: models-download-0
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: busybox
           command: [ "wget", "-O", "/tmp/coco_labels.txt", "https://dl.google.com/coral/canned_models/coco_labels.txt"]
           volumeMounts:
           - name: models-volume
-            mountPath: /tmp                
+            mountPath: /tmp
         - name: models-download-1
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: busybox
           command: [ "wget", "-O", "/tmp/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite", "https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_face_quant_postprocess_edgetpu.tflite"]
           volumeMounts:
           - name: models-volume
             mountPath: /tmp
         - name: models-download-2
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: busybox
           command: [ "wget", "-O", "/tmp/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite", "https://dl.google.com/coral/canned_models/mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"]
           volumeMounts:
           - name: models-volume
-            mountPath: /tmp              
+            mountPath: /tmp
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          {{- range $key, $value := .Values.env }}
-            - name: "{{ $key }}"
-              value: "{{ $value }}"
-          {{- end }}          
           ports:
             - name: http
               containerPort: 8080
@@ -60,8 +64,6 @@ spec:
             httpGet:
               path: /detectors
               port: http
-          securityContext:
-            privileged: true
           volumeMounts:
           - mountPath: /dev/bus/usb
             name: usb

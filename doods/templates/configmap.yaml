@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "doods.fullname" . }}
   labels:
-{{ include "doods.labels" . | indent 4 }}
+    {{- include "doods.labels" . | nindent 4 }}
 data:
   config.yaml: |-
     doods:
@@ -21,4 +21,4 @@ data:
           labelFile: models/coco_labels.txt
           numThreads: 4
           numConcurrent: 4
-          hwAccel: true          
+          hwAccel: true

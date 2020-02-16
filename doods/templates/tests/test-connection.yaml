@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "doods.fullname" . }}-test-connection"
   labels:
-{{ include "doods.labels" . | indent 4 }}
+    {{- include "doods.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:
@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "doods.fullname" . }}:{{ .Values.service.port }}/detectors']
+      args: ['{{ include "doods.fullname" . }}:{{ .Values.service.port }}/detectors']
   restartPolicy: Never

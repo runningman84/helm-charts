@@ -35,11 +35,29 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "doods.labels" -}}
-app.kubernetes.io/name: {{ include "doods.name" . }}
 helm.sh/chart: {{ include "doods.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{ include "doods.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "doods.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "doods.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "doods.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "doods.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
 {{- end -}}

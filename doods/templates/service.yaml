@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "doods.fullname" . }}
   labels:
-{{ include "doods.labels" . | indent 4 }}
+    {{- include "doods.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,5 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "doods.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "doods.selectorLabels" . | nindent 4 }}
