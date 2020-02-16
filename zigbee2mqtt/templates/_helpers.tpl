@@ -35,13 +35,20 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "zigbee2mqtt.labels" -}}
-app.kubernetes.io/name: {{ include "zigbee2mqtt.name" . }}
 helm.sh/chart: {{ include "zigbee2mqtt.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{ include "zigbee2mqtt.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "zigbee2mqtt.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "zigbee2mqtt.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*

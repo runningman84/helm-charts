@@ -3,30 +3,29 @@ kind: Deployment
 metadata:
   name: {{ include "zigbee2mqtt.fullname" . }}
   labels:
-{{ include "zigbee2mqtt.labels" . | indent 4 }}
+    {{- include "zigbee2mqtt.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "zigbee2mqtt.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "zigbee2mqtt.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "zigbee2mqtt.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "zigbee2mqtt.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      serviceAccountName: {{ include "zigbee2mqtt.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            privileged: true
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: TZ
