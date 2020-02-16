@@ -61,6 +61,28 @@ spec:
             name: datastore
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+        - name: {{ .Chart.Name }}-exporter
+          image: "{{ .Values.monitoring.image.repository }}:{{ .Values.monitoring.image.tag }}"
+          imagePullPolicy: {{ .Values.monitoring.image.pullPolicy }}
+          env:
+            - name: ES_URI
+              value: "http://127.0.0.1:9200"
+          ports:
+            - name: metrics
+              containerPort: 9114
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: metrics
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: metrics
+            initialDelaySeconds: 60
+          resources:
+{{ toYaml .Values.monitoring.resources | indent 12 }}
       volumes:
       - name: datastore
       {{- if .Values.persistence.enabled }}

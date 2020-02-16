@@ -64,3 +64,37 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+## Add mosquitto-exporter for Prometheus
+## https://github.com/sapcc/mosquitto-exporter
+monitoring:
+  enabled: true
+  serviceMonitor:
+    # When set true and if Prometheus Operator is installed then use a ServiceMonitor to configure scraping
+    enabled: true
+    # Set the namespace the ServiceMonitor should be deployed
+    # namespace: monitoring
+    # Set how frequently Prometheus should scrape
+    # interval: 30s
+    # Set path to beats-exporter telemtery-path
+    # telemetryPath: /metrics
+    # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
+    # labels:
+  image:
+    repository: justwatch/elasticsearch_exporter
+    tag: 1.1.0
+    pullPolicy: IfNotPresent
+  resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 200Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 100Mi
+
+  ## default is "9114".
+  exporterPort: 9114
