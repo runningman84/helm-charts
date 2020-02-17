@@ -89,3 +89,4 @@ data:
     # Log level (one from debug, info, warn, error)
     logLevel: info
   whitelist.txt: |-
+    mobile.pipe.aria.microsoft.com
