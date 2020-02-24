@@ -31,6 +31,8 @@ spec:
             - name: mqtt
               containerPort: 1883
               protocol: TCP
+            - name: websocket
+              containerPort: 9090
           livenessProbe:
             tcpSocket:
               port: mqtt
@@ -59,11 +61,29 @@ spec:
             - name: metrics
               containerPort: {{ .Values.monitoring.exporterPort}}
               protocol: TCP
+          volumeMounts:
+          - name: mosquitto-conf
+            mountPath: /mosquitto/config/mosquitto.conf
+            subPath: mosquitto.conf
+            readOnly: true
+          - name: mosquitto-data
+            mountPath: /mosquitto/data
           livenessProbe:
             httpGet:
               path: /
               port: metrics
   {{- end }}
+      volumes:
+      - name: mosquitto-conf
+        configMap:
+          name: {{ include "mosquitto.fullname" . }}
+      - name: mosquitto-data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "mosquitto.fullname" . }}
+      {{- else }}
+        emptyDir: {}
+      {{- end -}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

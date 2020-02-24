@@ -16,10 +16,14 @@ spec:
   {{- end }}
   {{- end }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: 1883
+      targetPort: mqtt
       protocol: TCP
-      name: http
+      name: mqtt
+    - port: 9090
+      targetPort: websocket
+      protocol: TCP
+      name: websocket
     - port: {{ .Values.monitoring.exporterPort }}
       targetPort: metrics
       protocol: TCP
