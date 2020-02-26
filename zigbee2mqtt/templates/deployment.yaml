@@ -31,16 +31,16 @@ spec:
           - name: TZ
             value: "Europe/Berlin"
           volumeMounts:
-          - mountPath: /dev/ttyACM0
-            name: tty
+          # - mountPath: /dev/ttyACM0
+          #   name: tty
           - mountPath: /app/data
             name: datastore
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: tty
-          hostPath:
-            path: /dev/ttyACM0
+        # - name: tty
+        #   hostPath:
+        #     path: /dev/ttyACM0
         - name: datastore
         {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
