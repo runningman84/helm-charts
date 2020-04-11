@@ -4,6 +4,7 @@ metadata:
   name: {{ include "blocky.fullname" . }}-udp
   labels:
     {{- include "blocky.labels" . | nindent 4 }}
+    app.kubernetes.io/component: "udp-service"
   annotations:
     metallb.universe.tf/allow-shared-ip: "true"
 spec:

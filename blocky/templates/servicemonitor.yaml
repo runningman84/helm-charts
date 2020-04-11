@@ -24,4 +24,5 @@ spec:
   selector:
     matchLabels:
     {{- include "blocky.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: "tcp-service"
 {{- end }}
