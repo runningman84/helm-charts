@@ -1,9 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "blocky.fullname" . }}
+  name: {{ include "blocky.fullname" . }}-udp
   labels:
     {{- include "blocky.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "true"
 spec:
   type: {{ .Values.service.type }}
   {{- if eq .Values.service.type "LoadBalancer" }}
@@ -16,10 +18,6 @@ spec:
   {{- end }}
   {{- end }}
   ports:
-    # - port: {{ .Values.service.port }}
-    #   targetPort: dns-tcp
-    #   protocol: TCP
-    #   name: dns-tcp
     - port: {{ .Values.service.port }}
       targetPort: dns-udp
       protocol: UDP
