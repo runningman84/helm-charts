@@ -65,6 +65,19 @@ data:
         # 0 value -> use default
         refreshPeriod: 0
 
+    # optional: configuration for caching of DNS responses
+    caching:
+      # amount in minutes, how long a response must be cached (min value).
+      # If <=0, use response's TTL, if >0 use this value, if TTL is smaller
+      # Default: 0
+      minTime: 40
+      # amount in minutes, how long a response must be cached (max value).
+      # If <0, do not cache responses
+      # If 0, use TTL
+      # If > 0, use this value, if TTL is greater
+      # Default: 0
+      maxTime: -1
+
     #optional: configuration of client name resolution
     clientLookup:
         # this DNS resolver will be used to perform reverse DNS lookup (typically local router)
@@ -74,6 +87,13 @@ data:
         singleNameOrder:
           - 2
           - 1
+
+    # optional: configuration for prometheus metrics endpoint
+    prometheus:
+      # enabled if true
+      enable: true
+      # url path, optional (default '/metrics')
+      path: /metrics
 
     # optional: write query information (question, answer, client, duration etc) to daily csv file
     # queryLog:
@@ -88,5 +108,10 @@ data:
     port: 8053
     # Log level (one from debug, info, warn, error)
     logLevel: info
+
+    # optional: HTTP listener port, default 0 = no http listener. If > 0, will be used for prometheus metrics, pprof, REST API, ...
+    httpPort: 4000
+    # optional: use this DNS server to resolve blacklist urls and upstream DNS servers (DOH). Useful if no DNS resolver is configured and blocky needs to resolve a host name. Format net:IP:port, net must be udp or tcp
+    bootstrapDns: tcp:1.1.1.1
   whitelist.txt: |-
     mobile.pipe.aria.microsoft.com

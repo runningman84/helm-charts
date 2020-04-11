@@ -36,6 +36,9 @@ spec:
             - name: dns-udp
               containerPort: 8053
               protocol: UDP
+            - name: http
+              containerPort: 4000
+              protocol: TCP
           readinessProbe:
             exec:
               command:
