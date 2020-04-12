@@ -24,9 +24,6 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-#          args:
-#            - --web.listen-address=":{{ .Values.containerPort }}"
-#            - --target {{ .Values.target.host }}:{{ .Values.target.interface }}
           ports:
             - name: http
               containerPort: {{ .Values.containerPort }}

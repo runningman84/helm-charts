@@ -18,10 +18,7 @@ service:
 
 containerPort: 9493
 
-target:
-  # Enter host ip or name here
-  host: 1.2.3.4
-  interface: eth0
+targets:
 
 ingress:
   enabled: false
@@ -36,7 +33,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-## Add support for Prometheus 
+## Add support for Prometheus
 monitoring:
   enabled: true
   serviceMonitor:

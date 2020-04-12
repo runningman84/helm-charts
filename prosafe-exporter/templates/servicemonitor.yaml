@@ -12,11 +12,19 @@ metadata:
 {{- end }}
 spec:
   endpoints:
+  {{- range $value := .Values.targets }}
   - targetPort: http
     path: /probe
     params:
       target:
-      - 192.168.178.4:enp6s0
+      - {{ $value }}
+    metricRelabelings:
+      - separator: ;
+        regex: (.*)
+        targetLabel: instance
+        replacement: {{ (split ":" $value)._0 }}
+        action: replace
+  {{- end }}
 {{- if .Values.monitoring.serviceMonitor.interval }}
     interval: {{ .Values.monitoring.serviceMonitor.interval }}
 {{- end }}
