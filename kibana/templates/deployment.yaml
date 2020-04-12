@@ -47,11 +47,15 @@ spec:
               path: /
               port: http
           volumeMounts:
+          - mountPath: /usr/share/kibana/data
+            name: datastore
           - mountPath: /tmp
             name: tmpstore
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
+      - name: datastore
+        emptyDir: {}
       - name: tmpstore
         emptyDir: {}
       {{- with .Values.nodeSelector }}
