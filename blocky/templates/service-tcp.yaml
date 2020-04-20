@@ -18,6 +18,7 @@ spec:
 {{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
   {{- end }}
   {{- end }}
+  externalTrafficPolicy: "Local"
   ports:
     - port: {{ .Values.service.port }}
       targetPort: dns-tcp
