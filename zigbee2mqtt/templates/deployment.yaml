@@ -9,6 +9,8 @@ spec:
   selector:
     matchLabels:
       {{- include "zigbee2mqtt.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ .Values.strategyType }}
   template:
     metadata:
       labels:
