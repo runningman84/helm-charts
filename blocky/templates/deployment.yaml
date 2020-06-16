@@ -39,7 +39,7 @@ spec:
             - name: http
               containerPort: 4000
               protocol: TCP
-          readinessProbe:
+          livenessProbe:
             exec:
               command:
               - /usr/bin/dig
@@ -47,6 +47,17 @@ spec:
               - -p
               - "8053"
               - healthcheck.blocky
+              - +tcp
+            initialDelaySeconds: 5
+            periodSeconds: 60
+          readinessProbe:
+            exec:
+              command:
+              - /usr/bin/dig
+              - "@127.0.0.1"
+              - -p
+              - "8053"
+              - www.google.com
               - +tcp
             initialDelaySeconds: 5
             periodSeconds: 60
