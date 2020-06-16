@@ -68,6 +68,118 @@ tolerations: []
 
 affinity: {}
 
+config:
+  upstream:
+    # these external DNS resolvers will be used. Blocky picks 2 random resolvers from the list for each query
+    # format for resolver: net:host:port. net could be tcp, udp or tcp-tls. If port is empty, default port will be used (53 for udp and tcp, 853 for tcp-tls)
+    externalResolvers:
+      #- udp:8.8.8.8
+      #- udp:8.8.4.4
+      #- udp:1.1.1.1
+      - tcp-tls:8.8.8.8:853
+      - tcp-tls:8.8.4.4:853
+      - tcp-tls:1.0.0.1:853
+      - https://dns.digitale-gesellschaft.ch/dns-query
+      - https://cloudflare-dns.com/dns-query
+
+  # optional: custom IP address for domain name (with all sub-domains)
+  # example: query "printer.lan" or "my.printer.lan" will return 192.168.178.3
+  customDNS:
+      mapping:
+        #printer.lan: 192.168.178.3
+
+  # optional: definition, which DNS resolver should be used for queries to the domain (with all sub-domains).
+  # Example: Query client.fritz.box will ask DNS server 192.168.178.1. This is necessary for local network, to resolve clients by host name
+  conditional:
+      mapping:
+        fritz.box: udp:192.168.178.1
+
+  # optional: use black and white lists to block queries (for example ads, trackers, adult pages etc.)
+  blocking:
+      # definition of blacklist groups. Can be external link (http/https) or local file
+      blackLists:
+        ads:
+          - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+          - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+          - https://mirror1.malwaredomains.com/files/justdomains
+          - http://sysctl.org/cameleon/hosts
+          - https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
+          - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+        special:
+          - https://block.energized.pro/ultimate/formats/hosts.txt
+        bad_ips:
+          - https://block.energized.pro/extensions/ips/formats/list.txt
+      # definition of whitelist groups. Attention: if the same group has black and whitelists, whitelists will be used to disable particular blacklist entries. If a group has only whitelist entries -> this means only domains from this list are allowed, all other domains will be blocked
+      whiteLists:
+        ads:
+          - whitelist.txt
+      # definition: which groups should be appied for which client
+      clientGroupsBlock:
+        # default will be used, if no special definition for a client name exists
+        default:
+          - ads
+          - special
+        # use client name or ip address
+        # laptop.fritz.box:
+        #   - ads
+      # which response will be sent, if query is blocked:
+      # zeroIp: 0.0.0.0 will be returned (default)
+      # nxDomain: return NXDOMAIN as return code
+      blockType: nxDomain
+      # optional: automaticaly list refresh period in minutes. Default: 4h.
+      # Negative value -> deactivate automaticaly refresh.
+      # 0 value -> use default
+      refreshPeriod: 0
+
+  # optional: configuration for caching of DNS responses
+  caching:
+    # amount in minutes, how long a response must be cached (min value).
+    # If <=0, use response's TTL, if >0 use this value, if TTL is smaller
+    # Default: 0
+    minTime: 20
+    # amount in minutes, how long a response must be cached (max value).
+    # If <0, do not cache responses
+    # If 0, use TTL
+    # If > 0, use this value, if TTL is greater
+    # Default: 0
+    maxTime: 1
+
+  #optional: configuration of client name resolution
+  clientLookup:
+      # this DNS resolver will be used to perform reverse DNS lookup (typically local router)
+      upstream: udp:192.168.178.1
+      # optional: some routers return multiple names for client (host name and user defined name). Define which single name should be used.
+      # Example: take second name if present, if not take first name
+      singleNameOrder:
+        - 2
+        - 1
+
+  # optional: configuration for prometheus metrics endpoint
+  prometheus:
+    # enabled if true
+    enable: true
+    # url path, optional (default '/metrics')
+    path: /metrics
+
+  # optional: write query information (question, answer, client, duration etc) to daily csv file
+  # queryLog:
+  #     # directory (should be mounted as volume in docker)
+  #     dir: /logs
+  #     # if true, write one file per client. Writes all queries to single file otherwise
+  #     perClient: true
+  #     # if > 0, deletes log files which are older than ... days
+  #     logRetentionDays: 7
+
+  # Port, should be 53 (UDP and TCP)
+  port: 8053
+  # Log level (one from debug, info, warn, error)
+  logLevel: info
+
+  # optional: HTTP listener port, default 0 = no http listener. If > 0, will be used for prometheus metrics, pprof, REST API, ...
+  httpPort: 4000
+  # optional: use this DNS server to resolve blacklist urls and upstream DNS servers (DOH). Useful if no DNS resolver is configured and blocky needs to resolve a host name. Format net:IP:port, net must be udp or tcp
+  bootstrapDns: tcp:1.1.1.1
+
 ## Add elasticsearch-exporter for Prometheus
 monitoring:
   enabled: true
