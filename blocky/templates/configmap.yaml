@@ -17,6 +17,8 @@ data:
         - tcp-tls:8.8.8.8:853
         - tcp-tls:8.8.4.4:853
         - tcp-tls:1.0.0.1:853
+        - tcp-tls:fdns1.dismail.de:853
+        - https://dns.digitale-gesellschaft.ch/dns-query
 
     # optional: custom IP address for domain name (with all sub-domains)
     # example: query "printer.lan" or "my.printer.lan" will return 192.168.178.3
