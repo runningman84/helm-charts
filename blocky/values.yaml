@@ -119,6 +119,7 @@ config:
         default:
           - ads
           - special
+          - bad_ips
         # use client name or ip address
         # laptop.fritz.box:
         #   - ads
