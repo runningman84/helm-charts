@@ -9,6 +9,7 @@ strategyType: Recreate
 image:
   repository: koenkk/zigbee2mqtt
   pullPolicy: IfNotPresent
+  tag: "{{ .Chart.AppVersion }}"
 
 imagePullSecrets: []
 nameOverride: ""
