@@ -1,6 +1,7 @@
 apiVersion: v2
 name: mosquitto
 description: A Helm chart for Kubernetes
+icon: https://mosquitto.org/images/mosquitto-text-side-28.png
 
 # A chart can be either an 'application' or a 'library' chart.
 #

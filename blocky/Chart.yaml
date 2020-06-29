@@ -1,6 +1,7 @@
 apiVersion: v2
 name: blocky
 description: A Helm chart for Kubernetes
+icon: https://github.com/0xERR0R/blocky/raw/master/docs/blocky.svg
 
 # A chart can be either an 'application' or a 'library' chart.
 #
