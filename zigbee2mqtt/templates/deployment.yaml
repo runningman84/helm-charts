@@ -1,7 +1,9 @@
+{{- $fullName := include "zigbee2mqtt.fullname" . -}}
+{{- $assistantContainerName := printf "%s-%s" $fullName "assistant" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "zigbee2mqtt.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "zigbee2mqtt.labels" . | nindent 4 }}
 spec:
@@ -39,6 +41,52 @@ spec:
             name: datastore
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        - name: {{ $assistantContainerName }}
+          image: "{{ .Values.assistant.image.repository }}:{{ tpl .Values.assistant.image.tag . }}"
+          imagePullPolicy: {{ .Values.assistant.image.pullPolicy }}
+          env:
+            - name: Z2MA_SETTINGS__MQTTSERVER
+              value: {{ .Values.assistant.mqtt.server }}
+            - name: Z2MA_SETTINGS__MQTTUSERNAME
+              value: {{ .Values.assistant.mqtt.username }}
+            - name: Z2MA_SETTINGS__MQTTPASSWORD
+              value: {{ .Values.assistant.mqtt.password }}
+            - name: ASPNETCORE_URLS
+              value: "http://*:8880"
+          {{ if .Values.assistant.baseTopic }}
+            - name: Z2MA_SETTINGS__BASETOPIC
+              value: {{ .Values.assistant.baseTopic }}
+          {{ end }}
+          {{ if hasKey .Values.assistant "haBaseTopic" }}
+            - name: Z2MA_SETTINGS__HOMEASSISTANTDISCOVERYBASETOPIC
+              value: {{ .Values.assistant.haBaseTopic }}
+          {{ end }}
+          {{ if hasKey .Values.assistant "lowBatteryThreshold" }}
+            - name: Z2MA_SETTINGS__LOWBATTERYTHRESHOLD
+              value: {{ .Values.assistant.lowBatteryThreshold }}
+          {{ end }}
+          {{ if hasKey .Values.assistant "allowJoinTimeout" }}
+            - name: Z2MA_SETTINGS__ALLOWJOINTIMEOUT
+              value: {{ .Values.assistant.allowJoinTimeout }}
+          {{ end }}
+          {{ if hasKey .Values.assistant "autosetLastSeen" }}
+            - name: Z2MA_SETTINGS__AUTOSETLASTSEEN
+              value: {{ .Values.assistant.autosetLastSeen }}
+          {{ end }}
+          {{ if hasKey .Values.assistant "pollingSchedule" }}
+            - name: Z2MA_SETTINGS__DEVICESPOLLINGSCHEDULE
+              value: {{ .Values.assistant.pollingSchedule }}
+          {{ end }}
+          {{ if hasKey .Values.assistant "netScanSchedule" }}
+            - name: Z2MA_SETTINGS__NETWORKSCANSCHEDULE
+              value: {{ .Values.assistant.netScanSchedule }}
+          {{ end }}
+            - name: TZ
+              value: "Europe/Berlin"
+          ports:
+            - name: http
+              containerPort: {{ .Values.assistant.service.port }}
+              protocol: TCP
       volumes:
         # - name: tty
         #   hostPath:
