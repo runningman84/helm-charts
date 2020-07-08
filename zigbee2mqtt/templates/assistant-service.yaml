@@ -6,10 +6,7 @@ kind: Service
 metadata:
   name: {{ $serviceName }}
   labels:
-    app.kubernetes.io/name: {{ include "zigbee2mqtt.name" . }}
-    helm.sh/chart: {{ include "zigbee2mqtt.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- include "zigbee2mqtt.labels" . | nindent 4 }}
 {{- if .Values.assistant.service.labels }}
 {{ toYaml .Values.assistant.service.labels | indent 4 }}
 {{- end }}
