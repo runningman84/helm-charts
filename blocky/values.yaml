@@ -118,7 +118,7 @@ config:
         # default will be used, if no special definition for a client name exists
         default:
           - ads
-          - bad_ips
+        #  - bad_ips
         # use client name or ip address
         # laptop.fritz.box:
         #   - ads
