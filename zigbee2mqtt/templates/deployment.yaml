@@ -41,6 +41,7 @@ spec:
             name: datastore
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.assistant.enabled }}
         - name: {{ $assistantContainerName }}
           image: "{{ .Values.assistant.image.repository }}:{{ tpl .Values.assistant.image.tag . }}"
           imagePullPolicy: {{ .Values.assistant.image.pullPolicy }}
@@ -87,6 +88,7 @@ spec:
             - name: http
               containerPort: {{ .Values.assistant.service.port }}
               protocol: TCP
+          {{ end }}
       volumes:
         # - name: tty
         #   hostPath:
