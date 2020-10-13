@@ -11,6 +11,8 @@ spec:
       {{- include "kibana.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        fluentbit.io/exclude: "true"
       labels:
         {{- include "kibana.selectorLabels" . | nindent 8 }}
     spec:

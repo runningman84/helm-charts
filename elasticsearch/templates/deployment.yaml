@@ -11,6 +11,8 @@ spec:
       {{- include "elasticsearch.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        fluentbit.io/exclude: "true"
       labels:
         {{- include "elasticsearch.selectorLabels" . | nindent 8 }}
     spec:
