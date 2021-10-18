@@ -1,7 +1,0 @@
-apiVersion: v2
-name: zigbee2mqtt
-description: Zigbee to MQTT bridge, get rid of your proprietary Zigbee bridges
-icon: https://www.zigbee2mqtt.io/images/logo.png
-type: application
-version: 0.2.3
-appVersion: 1.17.0
