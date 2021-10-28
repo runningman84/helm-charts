@@ -23,6 +23,13 @@ spec:
       serviceAccountName: {{ include "doods.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              {{- include "doods.selectorLabels" . | nindent 14 }}
       initContainers:
         - name: models-download-0
           securityContext:
@@ -67,8 +74,14 @@ spec:
               path: /detectors
               port: http
           volumeMounts:
+      {{- if eq .Values.tpu "usb" }}
           - mountPath: /dev/bus/usb
             name: usb
+      {{- end }}
+      {{- if eq .Values.tpu "pci" }}
+          - mountPath: /dev/apex_0
+            name: apex
+      {{- end }}
           - mountPath: /opt/doods/config.yaml
             name: config-volume
             subPath: config.yaml
@@ -77,9 +90,16 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
+      {{- if eq .Values.tpu "usb" }}
         - name: usb
           hostPath:
             path: /dev/bus/usb
+      {{- end }}
+      {{- if eq .Values.tpu "pci" }}
+        - name: apex
+          hostPath:
+            path: /dev/apex_0
+      {{- end }}
         - name: config-volume
           configMap:
             # Provide the name of the ConfigMap containing the files you want
