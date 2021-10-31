@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "homematic-exporter.fullname" . }}
+  labels:
+    {{- include "homematic-exporter.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "homematic-exporter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "homematic-exporter.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "homematic-exporter.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+    {{- if .Values.ccu.host }}
+          - "--ccu_host"
+          - "{{ .Values.ccu.host }}"
+    {{- end }}
+    {{- if .Values.ccu.port }}
+          - "--ccu_port"
+          - "{{ .Values.ccu.port }}"
+    {{- end }}
+    {{- if .Values.ccu.user }}
+          - "--ccu_user"
+          - "{{ .Values.ccu.user }}"
+    {{- end }}
+    {{- if .Values.ccu.pass }}
+          - "--ccu_pass"
+          - "{{ .Values.ccu.pass }}"
+    {{- end }}
+          - "--port"
+          - "8010"
+          - "--debug"
+          ports:
+            - name: http
+              containerPort: 8010
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /metrics
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /metrics
+          #     port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
