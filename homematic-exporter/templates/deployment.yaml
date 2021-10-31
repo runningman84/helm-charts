@@ -46,7 +46,6 @@ spec:
     {{- end }}
           - "--port"
           - "8010"
-          - "--debug"
           ports:
             - name: http
               containerPort: 8010
