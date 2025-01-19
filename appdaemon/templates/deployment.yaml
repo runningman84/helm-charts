@@ -86,6 +86,8 @@ spec:
           volumeMounts:
           - name: config
             mountPath: /config
+          - name: tmp
+            mountPath: /tmp
           ports:
             - name: http
               containerPort: 5050
@@ -102,6 +104,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
       - name: config
+        emptyDir: {}
+      - name: tmp
         emptyDir: {}
       - name: git-secret
         secret:
