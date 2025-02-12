@@ -50,6 +50,31 @@ spec:
           resources:
 {{ toYaml .Values.gitsync.resources | indent 12 }}
       containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "appdaemon", "-c", "/config/appdaemon-config.git" ]
+          volumeMounts:
+          - name: config
+            mountPath: /config
+          - name: tmp
+            mountPath: /tmp
+          ports:
+            - name: http
+              containerPort: 5050
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
         - name: git-sync
           image: "{{ .Values.gitsync.image.repository }}:{{ .Values.gitsync.image.tag }}"
           imagePullPolicy: {{ .Values.gitsync.image.pullPolicy }}
@@ -77,31 +102,6 @@ spec:
             {{- toYaml .Values.gitsync.securityContext | nindent 12 }}
           resources:
 {{ toYaml .Values.gitsync.resources | indent 12 }}
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "appdaemon", "-c", "/config/appdaemon-config.git" ]
-          volumeMounts:
-          - name: config
-            mountPath: /config
-          - name: tmp
-            mountPath: /tmp
-          ports:
-            - name: http
-              containerPort: 5050
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
       volumes:
       - name: config
         emptyDir: {}
